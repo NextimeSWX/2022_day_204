@@ -8,7 +8,7 @@
 
 #include "stu.h"
 
-void to_each_their_turn(char *str)
+pid_t stu_system(char *str)
 {
     pid_t fork_res;
     int wstatus;
@@ -16,16 +16,18 @@ void to_each_their_turn(char *str)
     fork_res = fork();
     if (fork_res == -1) {
         stu_puts("Error");
+        exit(EXIT_FAILURE);
     }
     if (fork_res == 0) {
-        stu_puts("child:");
-        stu_puts(str);
-        stu_puts(" \n");
+        fork_res = execl("/bin/sh", "sh", "-c", str, NULL);
     }
     else {
         fork_res = waitpid(fork_res, &wstatus, 0);
-        stu_puts("parent:");
-        stu_puts(str);
-        stu_puts(" \n");
+    }
+    if (WIFEXITED(wstatus)) {
+        return (WEXITSTATUS(wstatus));
+            }
+    else {
+        return (-1);
     }
 }
